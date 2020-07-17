@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700");
+@import './partials/variables';
+
+html {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size:62.5%;
+
+    @media screen and (min-width: 1921px) {
+        font-size:75%;
+    }
+}
+
+.card-carousel {
+    width: 100%;
+}
+

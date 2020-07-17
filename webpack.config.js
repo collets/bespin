@@ -9,7 +9,7 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './dist',
+        contentBase: './devdist',
         hot: true,
     },
     plugins: [
@@ -17,6 +17,7 @@ module.exports = {
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             title: 'Bespin - An awesom carousel',
+            template: './index.html'
         }),
     ],
     output: {
@@ -45,10 +46,30 @@ module.exports = {
                     'style-loader',
                     // Translates CSS into CommonJS
                     'css-loader',
+                    {
+                      loader: 'postcss-loader',
+                      options: {
+                        config: {
+                          path: 'postcss.config.js'
+                        }
+                      }
+                    },
                     // Compiles Sass to CSS
                     'sass-loader',
                 ],
             },
+            {
+              test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+              use: [
+                {
+                  loader: 'file-loader',
+                  options: {
+                    name: '[name].[ext]',
+                    outputPath: 'fonts/'
+                  }
+                }
+              ]
+            }
         ],
     },
 };
