@@ -1,0 +1,16 @@
+@import './partials/variables';
+
+html {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size:62.5%;
+
+    @media screen and (min-width: 1921px) {
+        font-size:75%;
+    }
+}
+
+.carousel {
+    width: 100%;
+    margin-bottom: 30px;
+}
