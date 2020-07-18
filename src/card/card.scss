@@ -1,13 +1,39 @@
 .card {
     flex: 0 0 auto;
+    position: relative;
 
     height: var(--card-height);
     min-width: var(--card-width);
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease-in-out;
+    margin-bottom: 10px;
 
     &:hover {
+        transition: all 0.2s ease-in-out;
+
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    }
+}
+
+.card--collection {
+    &::after, &::before {
+        content: "";
+        
+        position: absolute;
+        height: 5px;
+
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+    }
+    &::after {
+        bottom: -5px;
+        left: 1%;
+
+        width: 98%;
+    }
+    &::before {
+        bottom: -10px;
+        left: 2%;
+
+        width: 96%;
     }
 }
 

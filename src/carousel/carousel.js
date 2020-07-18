@@ -1,23 +1,55 @@
 import './carousel.scss'
 import Card from '../card/card';
+import PlaceholderCard from '../card/placeholder-card';
+
+/**
+ * The options of a carousel
+ * 
+ * @typedef {Object} CarouselOptions
+ * @property {string} title - The title of the carousel
+ * @property {string} subtitle - The subtitle of the carousel
+ * @property {string} container - The ID of the container of the carousel
+ * @property {string} icon - The name of the icon
+ */
 
 /**
  * A carousel of images
  */
 export default class Carousel {
 
+    /**
+     * Get if is the last page
+     * 
+     * @returns {boolean}
+     */
     get isLastPage() {
         return this._allCardsLoaded && (this._page + 1) > this.totalPages;
     }
 
+    /**
+     * Get the numeber of pages
+     * 
+     * @returns {number}
+     */
     get totalPages() {
         return Math.ceil(this._cards.length / this._maxDisplayedCards);
     }
 
+    /**
+     * Get the options of the carousel
+     * 
+     * @returns {CarouselOptions}
+     */
     get options() {
         return this._options;
     }
 
+    /**
+     * The width of the cards
+     * 
+     * @returns {number}
+     * @private
+     */
     get _cardWidth() {
         const containerWidth = this._cardsContainer.offsetWidth;
         return (containerWidth - ((this._maxDisplayedCards - 1) * this._CARDS_GUTTER)) / this._maxDisplayedCards;
@@ -55,8 +87,29 @@ export default class Carousel {
         this._init();
     }
 
+    /**
+     * Go to the next page
+     */
+    next() {
+        this._next();
+    }
+
+    /**
+     * Go to the previous page
+     */
+    previous() {
+        this._previous();
+    }
+
+    /**
+     * Load the next page
+     * 
+     * @private
+     * @async
+     */
     async _next() {
-        if (!this._allCardsLoaded && this._page === this.totalPages) await this._fetchCards(this._maxDisplayedCards);
+        if (!this._allCardsLoaded && this._page === this.totalPages)
+            await this._fetchCards(this._maxDisplayedCards, true);
         
         if (this.isLastPage) return;
 
@@ -64,6 +117,11 @@ export default class Carousel {
         this._loadCurrentPage();
     }
 
+    /**
+     * Load the previous page
+     * 
+     * @private
+     */
     _previous() {
         if (this._page === 0) return;
 
@@ -71,19 +129,41 @@ export default class Carousel {
         this._loadCurrentPage();
     }
 
+    /**
+     * Load the current page and render it
+     * 
+     * @private
+     */
     _loadCurrentPage() {
         this._loadCardsForCurrentPage();
         this._renderCurrentPage();
     }
 
+    /**
+     * Reload the current page and render it
+     * 
+     * @private
+     * @async
+     */
     async _reloadCurrentPage() {
-        if (this._cards.length < this._maxDisplayedCards && !this._allCardsLoaded)
-            await this._fetchCards(this._maxDisplayedCards - this._displayedCards.length);
+        if ((this._cards.length % this._maxDisplayedCards !== 0) && !this._allCardsLoaded)
+            await this._fetchCards(this._maxDisplayedCards - (this._cards.length % this._maxDisplayedCards));
 
         this._loadCurrentPage();
     }
 
-    async _fetchCards(chunkSize) {
+
+    /**
+     * Get the cards to be rendered from the server
+     * 
+     * @param {number} chunkSize - The number of placeholders to be rendered
+     * @param {boolean} [clearResults] - The results must be cleared or not
+     * @private
+     * @async
+     */
+    async _fetchCards(chunkSize, clearResults) {
+        this._preloadCards(chunkSize, clearResults);
+
         const cardsData = await this._options.fetchCards(chunkSize);
         const cards = (cardsData || []).map(card => new Card(card));
 
@@ -94,6 +174,11 @@ export default class Carousel {
         this._cards.push(...cards);
     }
 
+    /**
+     * Load into memory the cards to be rendered
+     * 
+     * @private
+     */
     _loadCardsForCurrentPage() {
         const startIndex = (this._page -1) * this._maxDisplayedCards;
         const endIndex = this._page * this._maxDisplayedCards;
@@ -101,10 +186,28 @@ export default class Carousel {
         this._displayedCards = this._cards.slice(startIndex, endIndex);
     }
 
-    _preloadCurrentPage() {
+    /**
+     * Render the placeholders for the card in fetching
+     * 
+     * @param {number} chunkSize - The number of placeholders to be rendered
+     * @param {boolean} [clearResults] - The results must be cleared or not
+     * @private
+     */
+    _preloadCards(chunkSize, clearResults) {
+        if (clearResults) this._clearRenderedCards();
 
+        let count = chunkSize;
+        while (count) {
+            this._renderPlaceholder();
+            count--;
+        }
     }
 
+    /**
+     * Render the current page
+     * 
+     * @private
+     */
     _renderCurrentPage() {
         this._clearRenderedCards();
 
@@ -112,6 +215,12 @@ export default class Carousel {
         this._evaluateControllers();
     }
 
+    /**
+     * Render a card
+     * 
+     * @param {Card} card - The card to be rendered
+     * @private
+     */
     _renderCard(card) {
         const cardElement = card.render();
         cardElement.style.width = `${this._cardWidth}px`;
@@ -119,10 +228,24 @@ export default class Carousel {
         this._cardsContainer.append(cardElement);
     }
 
+    /**
+     * Render a placeholder
+     * 
+     * @private
+     */
     _renderPlaceholder() {
-        
+        const placeholder = new PlaceholderCard();
+        const placeholderElement = placeholder.render();
+        placeholderElement.style.width = `${this._cardWidth}px`;
+
+        this._cardsContainer.append(placeholderElement);
     }
 
+    /**
+     * Hide and show the controllers
+     * 
+     * @private
+     */
     _evaluateControllers() {
         this._page === 1
             ? this._prevController.classList.add('controller--hidden')
@@ -133,6 +256,11 @@ export default class Carousel {
         : this._nextController.classList.remove('controller--hidden');
     }
 
+    /**
+     * Clear the rendered cards
+     * 
+     * @private
+     */
     _clearRenderedCards() {
         this._cardsContainer.querySelectorAll('.card').forEach(el => el.remove());
     }
@@ -196,6 +324,7 @@ export default class Carousel {
      */
     _onResize() {
         this._calculateCardsDisplayed();
+        this._page = this._page > this.totalPages ? this.totalPages : this._page;
         this._reloadCurrentPage();
     }
 
@@ -236,6 +365,11 @@ export default class Carousel {
         console.error(message);
     }
 
+    /**
+     * Init the container of the carouser
+     * 
+     * @private
+     */
     _initContainer() {
         this._element.classList.add('carousel');
 
@@ -247,6 +381,12 @@ export default class Carousel {
         this._calculateCardsDisplayed();
     }
 
+    /**
+     * Create the header
+     * 
+     * @returns {HTMLElement}
+     * @private
+     */
     _createContainerHeader() {
         const headerEl = document.createElement('div');
         headerEl.classList.add('carousel__header');
@@ -286,6 +426,12 @@ export default class Carousel {
         return headerEl;
     }
 
+    /**
+     * Create the container for the cards
+     * 
+     * @returns {HTMLElement}
+     * @private
+     */
     _createContainerContent() {
         const contentEl = document.createElement('div');
         contentEl.classList.add('carousel__content');
@@ -293,6 +439,11 @@ export default class Carousel {
         return contentEl;
     }
 
+    /**
+     * Init the controls of the carousel
+     * 
+     * @private
+     */
     _initControls() {
         this._nextController = document.createElement('div');
         this._nextController.classList.add('controller', 'next-controller');
@@ -310,11 +461,21 @@ export default class Carousel {
         chevron.remove();
     }
 
+    /**
+     * Render the controls of the carousel
+     * 
+     * @private
+     */
     _renderControls() {
         this._cardsContainer.append(this._prevController);
         this._cardsContainer.append(this._nextController);
     }
 
+    /**
+     * Attach the click listener to the controls
+     * 
+     * @private
+     */
     _attachClickToController(controller, fn) {
         // fn.bind(this);
 
@@ -324,6 +485,12 @@ export default class Carousel {
         })
     }
 
+    /**
+     * Create a chevron icon
+     * 
+     * @returns {HTMLElement}
+     * @private
+     */
     _createChevron(classList) {
         const chevron = document.createElement('i');
         chevron.classList.add(...classList);

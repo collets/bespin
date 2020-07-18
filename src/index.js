@@ -3,27 +3,52 @@ import './styles/styles.scss'
 import Carousel from './carousel/carousel'
 import faker from 'faker';
 
+// Helper function to create random card in random number, based on a chunksize
+// Also add a random delay to simulate a server
+async function fetchCards(chunkSize) {
+    const delayFactor = faker.random.number({max: 30, min: 5})
+
+    await new Promise(resolve => setTimeout(resolve, delayFactor * 100));
+
+    const maxElement = faker.random.number({max: chunkSize, min: 2});
+
+    const types = ['video', 'elearning', 'learning_plan', 'playlist'];
+    const cardinality = ['single', 'collection'];
+
+    return Array(maxElement).fill('').map(el => ({
+        image: 'https://picsum.photos/400/200',
+        type: types[faker.random.number(3)],
+        duration: faker.random.number({max: 14400, min: 1800}),
+        title: faker.lorem.sentence(faker.random.number(15)),
+        cardinality: faker.random.boolean() ? 'single' : 'collection',
+        language: faker.random.word()
+    }));
+}
+
+// Options of first carousel
 const carousel1Options = {
     container: 'my-carousel1',
     title: 'Fresh and just uploaded content',
     subtitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
     icon: 'face',
     link: 'https://www.google.it/',
-    fetchCards: (chunkSize) => {
-        const maxElement = faker.random.number({max: chunkSize, min: 2});
-
-        const types = ['video', 'elearning', 'learning_plan', 'playlist'];
-        const cardinality = ['single', 'collection'];
-
-        return Array(maxElement).fill('').map(el => ({
-            image: 'https://picsum.photos/400/200',
-            type: types[faker.random.number(3)],
-            duration: faker.random.number({max: 14400, min: 1800}),
-            title: faker.lorem.sentence(faker.random.number(15)),
-            cardinality: faker.random.boolean ? 'single' : 'collection',
-            language: faker.random.word()
-        }));
+    fetchCards: async (chunkSize) => {
+        return fetchCards(chunkSize);
     }
 }
 
 const carousel1 = new Carousel(carousel1Options);
+
+// Options of second carousel
+const carousel2Options = {
+    container: 'my-carousel2',
+    title: 'Another carousel',
+    subtitle: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+    icon: 'two_wheeler',
+    link: 'https://www.google.it/',
+    fetchCards: async (chunkSize) => {
+        return fetchCards(chunkSize);
+    }
+}
+
+const carousel2 = new Carousel(carousel2Options);

@@ -86,13 +86,14 @@
 
 .controller {
     position: absolute;
+    z-index: 1;
     top: 0;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    height: 100%;
+    height: calc(100% - 10px);
     width: 40px;
 
     background-color: rgba(0, 0, 0, 0.60);
