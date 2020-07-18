@@ -23,6 +23,7 @@ export default class Card {
         if (parent) {
             parent.append(this._element);
         }
+        return this._element;
     }
 
     _loadConfiguration(configuration) {

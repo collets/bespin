@@ -1,13 +1,10 @@
 .card {
-    flex: 0 0 var(--card-width);
+    flex: 0 0 auto;
 
     height: var(--card-height);
     min-width: var(--card-width);
-    max-width: var(--card-width);
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease-in-out;
-
-    margin: 15px;
 
     &:hover {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
@@ -16,7 +13,7 @@
 
 .card--placeholder {
     .card__header {
-        background-color: var(--placeholder);
+        background-color: var(--c-placeholder);
     }
 
     .card__title {
@@ -25,7 +22,7 @@
         &::after, &::before {
             content: '';
             display: block;
-            background-color: var(--placeholder);
+            background-color: var(--c-placeholder);
             height: 1.6rem;
 
             margin-bottom: 5px;
@@ -39,7 +36,7 @@
     .card__tag {
         height: 1.6rem;
         display: block;
-        background-color: var(--placeholder);
+        background-color: var(--c-placeholder);
         width: 35%;
     }
 }
@@ -82,7 +79,7 @@
     font-size: 1.6rem;
     text-transform: capitalize;
 
-    color: #007ad7;
+    color: var(--c-accent);
 
     display: block;
     margin: 0 0 10px 0;
@@ -95,5 +92,5 @@
     font-size: 1.4rem;
     text-transform: capitalize;
 
-    color: #a2a2a2;
+    color: var(--c-light);
 }
