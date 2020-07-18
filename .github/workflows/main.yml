@@ -34,12 +34,14 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Install dependencies
-        run: npm install firebase-tools
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
           name: dist
           path: dist
       - name: Deploy to Firebase
-        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
