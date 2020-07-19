@@ -14,6 +14,8 @@ import PlaceholderCard from '../card/placeholder-card';
 
 /**
  * A carousel of images
+ * @class
+ * @typedef {Object} Carousel
  */
 export default class Carousel {
 
@@ -506,6 +508,8 @@ export default class Carousel {
      * 
      * Solution adaptep from this SO answer: https://stackoverflow.com/a/58719294
      * by Ulysse BN (https://stackoverflow.com/users/6320039/ulysse-bn)
+     * 
+     * @private
      */
     _initSwipe() {
         this._cardsContainer.addEventListener('touchstart', (event) => this._swipeStart(this._normalizeEvent(event)));
@@ -520,6 +524,7 @@ export default class Carousel {
 
     /**
      * The callback for the swipe start event
+     * @private
      * @callback
      * @param {MouseEvent|Touch} event - The normalized event
      */
@@ -529,6 +534,7 @@ export default class Carousel {
 
     /**
      * The callback for the swipe move event
+     * @private
      * @callback
      * @param {MouseEvent|Touch} event - The normalized event
      */
@@ -538,6 +544,7 @@ export default class Carousel {
 
     /**
      * The callback for the swipe end event
+     * @private
      * @callback
      * @param {MouseEvent|Touch} event - The normalized event
      */
@@ -551,6 +558,7 @@ export default class Carousel {
 
     /**
      * Utils for normalization of the event from touch and mouse events
+     * @private
      * @param {MouseEvent|TouchEvent} event - The event
      */
     _normalizeEvent(event) {
