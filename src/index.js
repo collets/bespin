@@ -11,8 +11,6 @@ async function fetchCards(chunkSize) {
 
     const maxElement = 2 + Math.round(Math.random() * (chunkSize - 2));
 
-    console.log(maxElement);
-
     const types = ['video', 'elearning', 'learning_plan', 'playlist'];
     const cardinality = ['single', 'collection'];
 
