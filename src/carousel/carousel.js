@@ -501,6 +501,12 @@ export default class Carousel {
         return chevron;
     }
 
+    /**
+     * Init the listener for the swipe, with touch and mouse.
+     * 
+     * Solution adaptep from this SO answer: https://stackoverflow.com/a/58719294
+     * by Ulysse BN (https://stackoverflow.com/users/6320039/ulysse-bn)
+     */
     _initSwipe() {
         this._cardsContainer.addEventListener('touchstart', (event) => this._swipeStart(this._normalizeEvent(event)));
         this._cardsContainer.addEventListener('mousedown', (event) => this._swipeStart(this._normalizeEvent(event)));
@@ -512,14 +518,29 @@ export default class Carousel {
         this._cardsContainer.addEventListener('mouseup', (event) => this._swipeEnd(this._normalizeEvent(event)));
     }
 
+    /**
+     * The callback for the swipe start event
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
     _swipeStart(event) {
         this.startCoord = event.screenX;
     }
 
+    /**
+     * The callback for the swipe move event
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
     _swipeMove(event) {
         this.endCoord = event.screenX;
     }
 
+    /**
+     * The callback for the swipe end event
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
     _swipeEnd() {
         const delta = this.endCoord - this.startCoord;
 
@@ -528,6 +549,10 @@ export default class Carousel {
         delta < 0 ? this._next() : this.previous();
     }
 
+    /**
+     * Utils for normalization of the event from touch and mouse events
+     * @param {MouseEvent|TouchEvent} event - The event
+     */
     _normalizeEvent(event) {
         return event.changedTouches ? event.changedTouches[0] : event;
     }
