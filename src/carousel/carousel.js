@@ -14,6 +14,8 @@ import PlaceholderCard from '../card/placeholder-card';
 
 /**
  * A carousel of images
+ * @class
+ * @typedef {Object} Carousel
  */
 export default class Carousel {
 
@@ -75,6 +77,7 @@ export default class Carousel {
     
         this._CARD_MIN_WIDTH = 300;
         this._CARDS_GUTTER = 15;
+        this._MIN_DELTA_SWIPE = 90;
 
         const validation = this._validateOptions(options);
         if (validation !== true) {
@@ -123,7 +126,7 @@ export default class Carousel {
      * @private
      */
     _previous() {
-        if (this._page === 0) return;
+        if (this._page === 1) return;
 
         this._page--;
         this._loadCurrentPage();
@@ -308,6 +311,7 @@ export default class Carousel {
      */
     _initListeners() {
         this._initResizeListener();
+        this._initSwipe();
     }
 
     /**
@@ -497,5 +501,67 @@ export default class Carousel {
         chevron.append('keyboard_arrow_right');
 
         return chevron;
+    }
+
+    /**
+     * Init the listener for the swipe, with touch and mouse.
+     * 
+     * Solution adaptep from this SO answer: https://stackoverflow.com/a/58719294
+     * by Ulysse BN (https://stackoverflow.com/users/6320039/ulysse-bn)
+     * 
+     * @private
+     */
+    _initSwipe() {
+        this._cardsContainer.addEventListener('touchstart', (event) => this._swipeStart(this._normalizeEvent(event)));
+        this._cardsContainer.addEventListener('mousedown', (event) => this._swipeStart(this._normalizeEvent(event)));
+        
+        this._cardsContainer.addEventListener('touchmove', (event) => this._swipeMove(this._normalizeEvent(event)));
+        this._cardsContainer.addEventListener('mousemove', (event) => this._swipeMove(this._normalizeEvent(event)));
+        
+        this._cardsContainer.addEventListener('touchend', (event) => this._swipeEnd(this._normalizeEvent(event)));
+        this._cardsContainer.addEventListener('mouseup', (event) => this._swipeEnd(this._normalizeEvent(event)));
+    }
+
+    /**
+     * The callback for the swipe start event
+     * @private
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
+    _swipeStart(event) {
+        this.startCoord = event.screenX;
+    }
+
+    /**
+     * The callback for the swipe move event
+     * @private
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
+    _swipeMove(event) {
+        this.endCoord = event.screenX;
+    }
+
+    /**
+     * The callback for the swipe end event
+     * @private
+     * @callback
+     * @param {MouseEvent|Touch} event - The normalized event
+     */
+    _swipeEnd() {
+        const delta = this.endCoord - this.startCoord;
+
+        if (Math.abs(delta) < this._MIN_DELTA_SWIPE) return;
+
+        delta < 0 ? this._next() : this.previous();
+    }
+
+    /**
+     * Utils for normalization of the event from touch and mouse events
+     * @private
+     * @param {MouseEvent|TouchEvent} event - The event
+     */
+    _normalizeEvent(event) {
+        return event.changedTouches ? event.changedTouches[0] : event;
     }
 }

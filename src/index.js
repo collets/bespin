@@ -11,8 +11,6 @@ async function fetchCards(chunkSize) {
 
     const maxElement = 2 + Math.round(Math.random() * (chunkSize - 2));
 
-    console.log(maxElement);
-
     const types = ['video', 'elearning', 'learning_plan', 'playlist'];
     const cardinality = ['single', 'collection'];
 
@@ -26,7 +24,7 @@ async function fetchCards(chunkSize) {
     }));
 }
 
-// Options of first carousel
+/** @type {CarouselOptions} */
 const carousel1Options = {
     container: 'my-carousel1',
     title: 'Fresh and just uploaded content',
@@ -38,9 +36,10 @@ const carousel1Options = {
     }
 }
 
+/** @type {Carousel} */
 const carousel1 = new Carousel(carousel1Options);
 
-// Options of second carousel
+/** @type {CarouselOptions} */
 const carousel2Options = {
     container: 'my-carousel2',
     title: 'Another carousel',
@@ -52,4 +51,5 @@ const carousel2Options = {
     }
 }
 
+/** @type {Carousel} */
 const carousel2 = new Carousel(carousel2Options);
